@@ -7,7 +7,7 @@ app.use(express.json());
 let persons = [
     { 
       "id": 1,
-      "name": "Hellas", 
+      "name": "Artos Hellas", 
       "number": "040-123456"
     },
     { 
@@ -17,12 +17,12 @@ let persons = [
     },
     { 
       "id": 3,
-      "name": "Dan", 
+      "name": "Dan Abramov", 
       "number": "12-43-234345"
     },
     { 
       "id": 4,
-      "name": "Mary", 
+      "name": "Mary Poppendick", 
       "number": "39-23-6423122"
     }
 ]
@@ -69,9 +69,23 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body;
 
+    const content = ({
+      name:body.name,
+      number: body.number
+    })
+
+    const findRepeatedName = persons.find(person => body.name === person.name);
+
+    if(!content ){
+      return response.status(400).json({ 
+        error: 'content missing' 
+    });}
+    if(findRepeatedName){
+      response.send('the name already exists in the phonebook');
+    }
+
     const person = {
-      name: body.name,
-      number: body.number,
+      content: content,
       id: newId
     }
     
