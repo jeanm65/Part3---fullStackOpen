@@ -25,6 +25,8 @@ let persons = [
     }
 ]
 
+const noteDate = new Date();
+
 app.get('/', (request, response) => {
     response.send('welcome world!');
   })
@@ -33,8 +35,15 @@ app.get('/api/persons', (request, response) => {
   response.json(persons);
 })
 
-const PORT = 3001;
+app.get('/info', (request, response) => {
+  const personsLength = Object.keys(persons).length;
+  console.log('length', personsLength);
+  console.log('date', noteDate);
+  response.send(`phonebook has info of ${personsLength} peoples <br>  ${noteDate}`);
+//   response.send(noteDate);
+})
 
+const PORT = 3001;
 app.listen(PORT, () => {
   console.log('server running on PORT', PORT);
 })
