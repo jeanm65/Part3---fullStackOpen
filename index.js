@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -90,9 +91,12 @@ app.post('/api/persons', (request, response) => {
     }
     
     response.json(person);
-})
+});
+morgan.token('body', (req, res) => JSON.stringify(req.body));
 
+app.use(morgan(':post :/api/persons :200 :4.896 ms - :res[content-length] :body - :req[content-length]'));
 const PORT = 3001;
+
 app.listen(PORT, () => {
   console.log('server running on PORT', PORT);
 })
