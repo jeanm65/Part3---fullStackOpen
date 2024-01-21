@@ -12,7 +12,7 @@ app.use(express.static("build"));
 
 app.use(cors());
 
-morgan(function (tokens, req, res) {
+const morganLogger = morgan(function (tokens, req, res) {
   return [
     tokens.method(req, res),
     tokens.url(req, res),
@@ -111,7 +111,7 @@ app.post("/persons", (request, response) => {
 
   response.json(person);
 
-  morgan.token("body", (request, res) => JSON.stringify(request.body));
+  morganLogger();
 });
 
 const PORT = 3000;
