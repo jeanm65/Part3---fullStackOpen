@@ -1,8 +1,26 @@
-const express = require('express');
+const express = require("express");
+
+const morgan = require("morgan");
+
+const cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
+
+app.use(express.static("build"));
+
+app.use(cors());
+
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms'
+  ].join(' ')
+})
 
 let persons = [
   {
@@ -60,21 +78,22 @@ app.get("/api/persons/:id", (request, response) => {
   }
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.filter((person) => person.id !== id);
   response.status(204).end();
 });
 
-app.post('/api/persons', (request, response) => {
-    const body = request.body;
+app.post("/persons", (request, response) => {
+  const body = request.body;
+  console.log("body:", body);
 
-    const content = ({
-      name:body.name,
-      number: body.number
-    })
+  const content = {
+    name: body.name,
+    number: body.number,
+  };
 
-    const findRepeatedName = persons.find(person => body.name === person.name);
+  const findRepeatedName = persons.find((person) => body.name === person.name);
 
   if (!content) {
     return response.status(400).json({
@@ -85,15 +104,17 @@ app.post('/api/persons', (request, response) => {
     response.send("the name already exists in the phonebook");
   }
 
-    const person = {
-      content: content,
-      id: newId
-    }
-    
-    response.json(person);
+  const person = {
+    content: content,
+    id: newId,
+  };
+
+  response.json(person);
+
+  morgan.token("body", (request, res) => JSON.stringify(request.body));
 });
 
-const PORT = 3001;
+const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log("server running on PORT", PORT);
