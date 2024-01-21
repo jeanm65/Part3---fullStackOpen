@@ -6,9 +6,15 @@ app.use(express.json());
 
 const morgan = require("morgan");
 
-app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body")
-);
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms'
+  ].join(' ')
+})
 
 let persons = [
   {
@@ -74,6 +80,7 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
+  console.log("body:", body);
 
   const content = {
     name: body.name,
@@ -98,7 +105,7 @@ app.post("/api/persons", (request, response) => {
 
   response.json(person);
 
-  morgan.token("body", (request) => JSON.stringify(request.body));
+  // morgan.token("body", (request, res) => JSON.stringify(request.body));
 });
 
 const PORT = 3001;
